@@ -1,11 +1,16 @@
 import React, { ChangeEvent, FormEvent } from 'react';
-import { TextField } from '@material-ui/core';
+import { TextField, createMuiTheme, ThemeProvider } from '@material-ui/core';
+import { Chart } from './Chart/Chart';
 import './Form.scss';
+import '../../styles/variables.scss';
+import { MATERIAL_FORM_THEME } from '../../config/constants';
 
 interface Input {
     type: string;
     name: string;
 }
+
+const theme = createMuiTheme(MATERIAL_FORM_THEME);
 
 export class Form extends React.Component {
     private readonly MIN_CATEGORIES = 6;
@@ -51,24 +56,28 @@ export class Form extends React.Component {
 
             rows.push(
                 <div className="input-row">
-                    <TextField
-                        variant="filled"
-                        type="text"
-                        label="Category"
-                        key={categoryInput.name}
-                        name={categoryInput.name}
-                        onChange={(e) => this.handleValueChange(e, categoryInput)}
-                        error={this.state[this.getErrorKey(categoryInput.name)]}
-                    />
-                    <TextField
-                        variant="filled"
-                        type="number"
-                        label="Value"
-                        key={valueInput.name}
-                        name={valueInput.name}
-                        onChange={(e) => this.handleValueChange(e, valueInput)}
-                        error={this.state[this.getErrorKey(valueInput.name)]}
-                    />
+                    <ThemeProvider theme={theme}>
+                        <TextField
+                            variant="filled"
+                            type="text"
+                            label="Category"
+                            className="text-input"
+                            key={categoryInput.name}
+                            name={categoryInput.name}
+                            onChange={(e) => this.handleValueChange(e, categoryInput)}
+                            error={this.state[this.getErrorKey(categoryInput.name)]}
+                        />
+                        <TextField
+                            variant="filled"
+                            type="number"
+                            label="Value"
+                            className="number-input"
+                            key={valueInput.name}
+                            name={valueInput.name}
+                            onChange={(e) => this.handleValueChange(e, valueInput)}
+                            error={this.state[this.getErrorKey(valueInput.name)]}
+                        />
+                    </ThemeProvider>
                 </div>
             );
         }

@@ -1,4 +1,10 @@
 .input-row {
+    padding: 8px 0;
     display: flex;
-    justify-content: space-between;
+    justify-content: left;
+
+    div.number-input {
+        max-width: 75px;
+        margin-left: 15px;
+    }
 }
