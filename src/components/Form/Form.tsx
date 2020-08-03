@@ -1,6 +1,6 @@
 import React, { ChangeEvent, FormEvent } from 'react';
 import { TextField, createMuiTheme, ThemeProvider } from '@material-ui/core';
-import { Chart } from './Chart/Chart';
+import { PolarAreaChart } from './PolarAreaChart/PolarAreaChart';
 import './Form.scss';
 import '../../styles/variables.scss';
 import { MATERIAL_FORM_THEME } from '../../config/constants';
@@ -14,7 +14,7 @@ const theme = createMuiTheme(MATERIAL_FORM_THEME);
 
 export class Form extends React.Component {
     private readonly MIN_CATEGORIES = 6;
-    private readonly MIN_CATEGORY_VALUE = 0;
+    private readonly MIN_CATEGORY_VALUE = 1;
     private readonly MAX_CATEGORY_VALUE = 10;
     private readonly CATEGORY_INPUT_TYPE = 'category';
     private readonly VALUE_INPUT_TYPE = 'value';
@@ -52,10 +52,12 @@ export class Form extends React.Component {
 
         for ( let i = 0; i < this.inputs.length; i += 2 ) {
             const categoryInput = this.inputs[i];
+            const categoryFieldHasError = this.state[this.getErrorKey(categoryInput.name)];
             const valueInput = this.inputs[i + 1];
+            const valueError = this.state[this.getErrorKey(valueInput.name)];
 
             rows.push(
-                <div className="input-row">
+                <div key={"row" + i.toString()} className="input-row">
                     <ThemeProvider theme={theme}>
                         <TextField
                             variant="filled"
@@ -65,7 +67,8 @@ export class Form extends React.Component {
                             key={categoryInput.name}
                             name={categoryInput.name}
                             onChange={(e) => this.handleValueChange(e, categoryInput)}
-                            error={this.state[this.getErrorKey(categoryInput.name)]}
+                            error={categoryFieldHasError}
+                            helperText={categoryFieldHasError ? 'Please provide a category.' : ''}
                         />
                         <TextField
                             variant="filled"
@@ -75,21 +78,22 @@ export class Form extends React.Component {
                             key={valueInput.name}
                             name={valueInput.name}
                             onChange={(e) => this.handleValueChange(e, valueInput)}
-                            error={this.state[this.getErrorKey(valueInput.name)]}
+                            error={valueError}
+                            helperText={valueError ? 'Please provide a whole number between 1 and 10, inclusively.' : ''}
                         />
                     </ThemeProvider>
                 </div>
             );
         }
 
-        this.inputs.forEach((input, index) => {
-        });
-
         return (
-            <form ref={this.formRef} onSubmit={this.handleSubmit}>
-                {rows}
-                <input type="submit" value="Submit" />
-            </form>
+            <div id="form-container">
+                <form ref={this.formRef} onSubmit={this.handleSubmit}>
+                    {rows}
+                    <input type="submit" value="Submit" />
+                </form>
+                <PolarAreaChart />
+            </div>
         );
     }
 
@@ -98,7 +102,9 @@ export class Form extends React.Component {
         const newState: any = {};
 
         if ( input.type === this.VALUE_INPUT_TYPE ) {
-            newState[this.getErrorKey(input.name)] = this.fieldHasError(event.target.value);
+            newState[this.getErrorKey(input.name)] = this.valueFieldHasError(event.target.value);
+        } else if (input.type === this.CATEGORY_INPUT_TYPE ) {
+            newState[this.getErrorKey(input.name)] = this.categoryFieldHasError(event.target.value);
         }
 
         this.setState(newState);
@@ -109,8 +115,12 @@ export class Form extends React.Component {
         console.log(this.formRef);
     }
 
-    private fieldHasError(value: number): boolean {
-        const error = isNaN(value) || value < this.MIN_CATEGORY_VALUE || value > this.MAX_CATEGORY_VALUE;
+    private categoryFieldHasError(value: string): boolean {
+        return !value.length;
+    }
+
+    private valueFieldHasError(value: number): boolean {
+        const error = isNaN(value) || value < this.MIN_CATEGORY_VALUE || value > this.MAX_CATEGORY_VALUE || value - Math.floor(value) !== 0;
         console.log(error);
         return error;
     }

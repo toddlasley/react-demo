@@ -1,10 +1,36 @@
-.input-row {
-    padding: 8px 0;
+div#form-container {
     display: flex;
-    justify-content: left;
+    justify-content: space-between;
 
-    div.number-input {
-        max-width: 75px;
-        margin-left: 15px;
+    form {
+        display: inline-block;
+        width: 70%;
+    
+        .input-row {
+            padding: 20px 0;
+            display: flex;
+            justify-content: space-between;
+
+            div.text-input {
+                width: 300px;
+
+                p.Mui-error {
+                    position: absolute;
+                    top: 55px;
+                }
+            }
+    
+            div.number-input {
+                max-width: 200px;
+                margin-left: 15px;
+
+                p.Mui-error {
+                    position: absolute;
+                    top: 55px;
+                    width: 200px;
+                    line-height: 1.2;
+                }
+            }
+        }
     }
 }
