@@ -4,21 +4,49 @@ import './PolarAreaChart.scss';
 
 export class PolarAreaChart extends React.Component {
     private chart: Chart | undefined;
-    private labels = ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'];
-    private data = [7, 9, 3, 5, 2, 3];
+    private labels: string[] | undefined;
+    private data: number[] | undefined;
+    private formInvalid = false;
 
     constructor(props: any) {
         super(props);
-        console.log(props);
+        this.updateProps(props);
     }
 
+
     render() {
+        this.updateProps(this.props);
+        this.createChartObject();
+
         return (
-            <canvas id="chart" width="500" height="500"></canvas>
+            <div id="chart-container">
+                {this.formInvalid
+                    ? <h3>Please provide the necessary values to complete your Wheel of Life.</h3>
+                    : <canvas id="chart" width="500" height="500"></canvas>}
+            </div>
         );
     }
 
     componentDidMount() {
+        this.createChartObject();
+    }
+
+    componentDidUpdate() {
+        if ( !this.chart ) {
+            this.createChartObject();
+        } else {
+            this.chart.data = this.getChartData();
+            this.chart.update();
+        }
+    }
+
+    private updateProps(props: any) {
+        this.labels = props.labels;
+        this.data = props.data;
+        this.formInvalid = !!props.formInvalid;
+    }
+
+    private createChartObject() {
         const chartElement = document.getElementById('chart') as HTMLCanvasElement;
         if ( chartElement && this.labels && this.data ) {
             this.chart = new Chart(chartElement.getContext('2d') as any, {
@@ -28,6 +56,8 @@ export class PolarAreaChart extends React.Component {
                     responsive: true
                 }
             });
+        } else if ( this.chart ) {
+            this.chart = undefined;
         }
     }
 

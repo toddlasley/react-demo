@@ -1,4 +1,17 @@
-#chart {
-    max-width: 500px;
-    max-height: 500px;
+@import '../../../styles/variables.scss';
+
+#chart-container {
+    width: 500px;
+    height: 500px;
+    position: relative;
+    display: block;
+
+    h3 {
+        position: absolute;
+        max-width: 260px;
+        text-align: center;
+        top: 25%;
+        left: 25%;
+        color: $primary-blue;
+    }
 }

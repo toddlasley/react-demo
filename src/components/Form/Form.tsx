@@ -49,12 +49,14 @@ export class Form extends React.Component {
 
     render() {
         const rows: JSX.Element[] = [];
+        const labels = [];
+        const data = [];
 
         for ( let i = 0; i < this.inputs.length; i += 2 ) {
             const categoryInput = this.inputs[i];
             const categoryFieldHasError = this.state[this.getErrorKey(categoryInput.name)];
             const valueInput = this.inputs[i + 1];
-            const valueError = this.state[this.getErrorKey(valueInput.name)];
+            const valueFieldHasError = this.state[this.getErrorKey(valueInput.name)];
 
             rows.push(
                 <div key={"row" + i.toString()} className="input-row">
@@ -78,13 +80,38 @@ export class Form extends React.Component {
                             key={valueInput.name}
                             name={valueInput.name}
                             onChange={(e) => this.handleValueChange(e, valueInput)}
-                            error={valueError}
-                            helperText={valueError ? 'Please provide a whole number between 1 and 10, inclusively.' : ''}
+                            error={valueFieldHasError}
+                            helperText={valueFieldHasError ? 'Please provide a whole number between 1 and 10, inclusively.' : ''}
                         />
                     </ThemeProvider>
                 </div>
             );
+
+            if ( this.formRef && this.formRef.current ) {
+                const formValues = this.formRef.current;
+                const categoryValue = formValues[i.toString()].value;
+                const numberValue = formValues[(i + 1).toString()].value;
+
+                if ( !this.categoryFieldHasError(categoryValue) ) {
+                    labels.push(categoryValue);
+                }
+
+                if ( !this.valueFieldHasError(numberValue) ) {
+                    data.push(numberValue);
+                }
+
+            }
         }
+
+        const categoryCount = this.inputs.length / 2;
+        const formInvalid = categoryCount !== labels.length || categoryCount !== data.length;
+
+        const polarAreaChartProps = {
+            labels: labels,
+            data: data,
+            formInvalid: formInvalid
+        };
+
 
         return (
             <div id="form-container">
@@ -92,7 +119,7 @@ export class Form extends React.Component {
                     {rows}
                     <input type="submit" value="Submit" />
                 </form>
-                <PolarAreaChart />
+                <PolarAreaChart {...polarAreaChartProps} />
             </div>
         );
     }
@@ -120,9 +147,7 @@ export class Form extends React.Component {
     }
 
     private valueFieldHasError(value: number): boolean {
-        const error = isNaN(value) || value < this.MIN_CATEGORY_VALUE || value > this.MAX_CATEGORY_VALUE || value - Math.floor(value) !== 0;
-        console.log(error);
-        return error;
+        return isNaN(value) || value < this.MIN_CATEGORY_VALUE || value > this.MAX_CATEGORY_VALUE || value - Math.floor(value) !== 0;
     }
 
     private getErrorKey(inputName: string) {
