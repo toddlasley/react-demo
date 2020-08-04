@@ -9,28 +9,42 @@ div#form-container {
         .input-row {
             padding: 20px 0;
             display: flex;
-            justify-content: space-between;
+            justify-content: left;
 
             div.text-input {
-                width: 300px;
+                width: 257px;
 
-                p.Mui-error {
+                p {
                     position: absolute;
                     top: 55px;
+                    margin-left: 2px;
                 }
             }
     
             div.number-input {
-                max-width: 200px;
+                max-width: 188px;
                 margin-left: 15px;
 
-                p.Mui-error {
+                p {
                     position: absolute;
                     top: 55px;
                     width: 200px;
                     line-height: 1.2;
+                    margin-left: 2px;
                 }
             }
+
+            button.remove-row-btn {
+                height: 35px;
+                width: 35px;
+                margin-top: 10px;
+                margin-left: 5px;
+            }
+        }
+
+        button#add-category-btn {
+            margin: 15px auto 0;
+            display: block;
         }
     }
 }

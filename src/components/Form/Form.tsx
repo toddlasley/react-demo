@@ -1,6 +1,7 @@
 import React, { ChangeEvent, FormEvent } from 'react';
-import { TextField, createMuiTheme, ThemeProvider } from '@material-ui/core';
+import { TextField, createMuiTheme, ThemeProvider, Button, IconButton } from '@material-ui/core';
 import { PolarAreaChart } from './PolarAreaChart/PolarAreaChart';
+import ClearIcon from '@material-ui/icons/Clear';
 import './Form.scss';
 import '../../styles/variables.scss';
 import { MATERIAL_FORM_THEME } from '../../config/constants';
@@ -14,6 +15,8 @@ const theme = createMuiTheme(MATERIAL_FORM_THEME);
 
 export class Form extends React.Component {
     private readonly MIN_CATEGORIES = 6;
+    private readonly MAX_CATEGORIES = 10;
+    private readonly INPUTS_PER_ROW = 2;
     private readonly MIN_CATEGORY_VALUE = 1;
     private readonly MAX_CATEGORY_VALUE = 10;
     private readonly CATEGORY_INPUT_TYPE = 'category';
@@ -45,6 +48,8 @@ export class Form extends React.Component {
         }
 
         this.handleSubmit = this.handleSubmit.bind(this);
+        this.addCategory = this.addCategory.bind(this);
+        this.removeLastInputRow = this.removeLastInputRow.bind(this);
     }
 
     render() {
@@ -52,45 +57,60 @@ export class Form extends React.Component {
         const labels = [];
         const data = [];
 
-        for ( let i = 0; i < this.inputs.length; i += 2 ) {
+        for ( let i = 0; i < this.inputs.length; i += this.INPUTS_PER_ROW ) {
+            const valueIndex = i + 1;
+
             const categoryInput = this.inputs[i];
             const categoryFieldHasError = this.state[this.getErrorKey(categoryInput.name)];
-            const valueInput = this.inputs[i + 1];
+            const valueInput = this.inputs[valueIndex];
             const valueFieldHasError = this.state[this.getErrorKey(valueInput.name)];
 
             rows.push(
                 <div key={"row" + i.toString()} className="input-row">
-                    <ThemeProvider theme={theme}>
-                        <TextField
-                            variant="filled"
-                            type="text"
-                            label="Category"
-                            className="text-input"
-                            key={categoryInput.name}
-                            name={categoryInput.name}
-                            onChange={(e) => this.handleValueChange(e, categoryInput)}
-                            error={categoryFieldHasError}
-                            helperText={categoryFieldHasError ? 'Please provide a category.' : ''}
-                        />
-                        <TextField
-                            variant="filled"
-                            type="number"
-                            label="Value"
-                            className="number-input"
-                            key={valueInput.name}
-                            name={valueInput.name}
-                            onChange={(e) => this.handleValueChange(e, valueInput)}
-                            error={valueFieldHasError}
-                            helperText={valueFieldHasError ? 'Please provide a whole number between 1 and 10, inclusively.' : ''}
-                        />
-                    </ThemeProvider>
+                    <TextField
+                        variant="filled"
+                        type="text"
+                        label="Category*"
+                        className="text-input"
+                        key={categoryInput.name}
+                        name={categoryInput.name}
+                        onChange={(e) => this.handleValueChange(e, categoryInput)}
+                        error={categoryFieldHasError}
+                        helperText="* Required"
+                    />
+                    <TextField
+                        variant="filled"
+                        type="number"
+                        label="Value*"
+                        className="number-input"
+                        key={valueInput.name}
+                        name={valueInput.name}
+                        onChange={(e) => this.handleValueChange(e, valueInput)}
+                        error={valueFieldHasError}
+                        helperText={valueFieldHasError ? 'Please provide a whole number between 1 and 10, inclusively.' : '* Required'}
+                    />
+                    {
+                        valueIndex === this.inputs.length - 1 && valueIndex > this.MIN_CATEGORIES * 2
+                            ?
+                                <IconButton
+                                    aria-label="remove"
+                                    className="remove-row-btn"
+                                    onClick={this.removeLastInputRow}
+                                >
+                                    <ClearIcon />
+                                </IconButton>
+                            : null
+                    }
                 </div>
             );
 
             if ( this.formRef && this.formRef.current ) {
                 const formValues = this.formRef.current;
-                const categoryValue = formValues[i.toString()].value;
-                const numberValue = formValues[(i + 1).toString()].value;
+                const categoryFormValue = formValues[i.toString()];
+                const categoryValue = categoryFormValue ? categoryFormValue.value : '';
+
+                const numberFormValue = formValues[valueIndex.toString()];
+                const numberValue = numberFormValue ? numberFormValue.value : 0;
 
                 if ( !this.categoryFieldHasError(categoryValue) ) {
                     labels.push(categoryValue);
@@ -103,7 +123,7 @@ export class Form extends React.Component {
             }
         }
 
-        const categoryCount = this.inputs.length / 2;
+        const categoryCount = this.inputs.length / this.INPUTS_PER_ROW;
         const formInvalid = categoryCount !== labels.length || categoryCount !== data.length;
 
         const polarAreaChartProps = {
@@ -116,12 +136,58 @@ export class Form extends React.Component {
         return (
             <div id="form-container">
                 <form ref={this.formRef} onSubmit={this.handleSubmit}>
-                    {rows}
-                    <input type="submit" value="Submit" />
+                    <ThemeProvider theme={theme}>
+                        {rows}
+                        <Button
+                            id="add-category-btn"
+                            variant="contained"
+                            color="primary"
+                            onClick={this.addCategory}
+                            disabled={this.inputs.length / this.INPUTS_PER_ROW >= this.MAX_CATEGORIES}
+                        >
+                            Add Category
+                        </Button>
+                    </ThemeProvider>
                 </form>
                 <PolarAreaChart {...polarAreaChartProps} />
             </div>
         );
+    }
+
+    private removeLastInputRow() {
+        const removedInputs = this.inputs.splice(this.inputs.length - this.INPUTS_PER_ROW, this.INPUTS_PER_ROW);
+        
+        const newState: any = {};
+
+        removedInputs.forEach((input) => {
+            newState[this.getErrorKey(input.name)] = false;    
+        });
+
+        this.setState(newState);
+    }
+
+    private addCategory(event: any) {
+        event.preventDefault();
+
+        const index = this.inputs.length;
+
+        const categoryInput = {
+            type: this.CATEGORY_INPUT_TYPE,
+            name: this.CATEGORY_INPUT_TYPE + index.toString()
+        };
+
+        const valueInput = {
+            type: this.VALUE_INPUT_TYPE,
+            name: this.VALUE_INPUT_TYPE + (index + 1).toString()
+        };
+
+        this.inputs.push(categoryInput, valueInput);
+
+        const newState: any = {};
+        newState[this.getErrorKey(categoryInput.name)] = false;
+        newState[this.getErrorKey(valueInput.name)] = false;
+
+        this.setState(newState);
     }
 
     private handleValueChange(event: ChangeEvent<any>, input: Input) {
