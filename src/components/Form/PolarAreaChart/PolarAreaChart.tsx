@@ -36,6 +36,11 @@ export class PolarAreaChart extends React.Component {
             this.createChartObject();
         } else {
             this.chart.data = this.getChartData();
+            
+            if ( this.chart.options.animation ) {
+                this.chart.options.animation.duration = 0;
+            }
+
             this.chart.update();
         }
     }
@@ -53,7 +58,14 @@ export class PolarAreaChart extends React.Component {
                 type: 'polarArea',
                 data: this.getChartData(),
                 options: {
-                    responsive: true
+                    responsive: true,
+                    scale: {
+                        ticks: {
+                            suggestedMax: 10
+                        }
+                    },
+                    tooltips: { enabled: false },
+                    hover: {}
                 }
             });
         } else if ( this.chart ) {
