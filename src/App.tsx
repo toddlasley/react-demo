@@ -13,9 +13,9 @@ export class App extends React.Component {
         return (
             <>
                 <div id="app-nav-bar">
-                    <img src={logo} alt="Logo" />
+                    {/* <img src={logo} alt="Logo" /> */}
                     <h1>
-                        Lynn Bartrum
+                        React App
                     </h1>
                 </div>
                 <div id="app-container">
