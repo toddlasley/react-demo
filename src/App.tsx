@@ -10,7 +10,7 @@ export class App extends React.Component {
 
     render() {
         return (
-            <div id="app-container">
+            <div id="wol-app-container">
                 <Stepper />
             </div>
         );

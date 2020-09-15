@@ -3,6 +3,7 @@ import { Button, createMuiTheme, Theme, ThemeProvider, Tooltip, withStyles } fro
 import './Stepper.scss';
 import '../../styles/variables.scss';
 import { LIFE_ASPECTS, MATERIAL_FORM_THEME } from '../../config/constants';
+import { LifeAspect } from '../../models/LifeAspect';
 
 const theme = createMuiTheme(MATERIAL_FORM_THEME);
 
@@ -18,21 +19,29 @@ export class Stepper extends React.Component {
     public state: any;
 
     private readonly MAX_ASPECTS_PER_ROW = 3;
+    private readonly REQUIRED_SELECTION_COUNT = 8;
 
     constructor(props: any) {
         super(props);
 
         this.state = {
             activeStep: 0
-        };        
+        };
+
+        this.handleBack = this.handleBack.bind(this);
+        this.handleNext = this.handleNext.bind(this);
     }
 
-    get nextButtonDisabled() {
-        return true;
+    get confirmButtonDisabled() {
+        return !this.requiredAspectsSelected;
     }
 
     get confirmButtonText() {
         return 'Next';
+    }
+
+    get requiredAspectsSelected() {
+        return this.state.selectedAspects && this.state.selectedAspects.length === this.REQUIRED_SELECTION_COUNT;
     }
 
     get aspectSelectionElementRows(): JSX.Element[] {
@@ -53,8 +62,10 @@ export class Stepper extends React.Component {
                         <Button
                             key={aspect.name}
                             variant="contained"
-                            color="primary"
+                            color={this.aspectIsSelected(aspect) ? 'secondary' : 'default'}
                             className="aspect-button"
+                            onClick={(e) => { this.handleSelection(e, aspect) }}
+                            disabled={this.requiredAspectsSelected && !this.aspectIsSelected(aspect)}
                         >
                             {aspect.name}
                         </Button>
@@ -82,22 +93,25 @@ export class Stepper extends React.Component {
         return (
             <ThemeProvider theme={theme}>
                 <div>
+                    <h2>Wheel of Life</h2>
                     <div>
                         {
                             this.state.activeStep === 0
                             ?
-                                <div id="aspect-rows-container">
-                                    {this.aspectSelectionElementRows}
-                                </div>
-                                
+                                <>
+                                    <h3>Choose the top 8 life categories most important to you</h3>
+                                    <div id="wol-aspect-rows-container">
+                                        {this.aspectSelectionElementRows}
+                                    </div>
+                                </>
                             : <p>Not on first page</p>
                         }
 
-                        <div>
+                        <div id="wol-button-actions-row">
                             <Button disabled={this.state.activeStep === 0} onClick={this.handleBack}>
                                 Back
                             </Button>
-                            <Button disabled={this.nextButtonDisabled} variant="contained" color="primary" onClick={this.handleNext}>
+                            <Button disabled={this.confirmButtonDisabled} variant="contained" color="primary" onClick={this.handleNext}>
                                 {this.confirmButtonText}
                             </Button>
                         </div>
@@ -105,6 +119,10 @@ export class Stepper extends React.Component {
                 </div>
             </ThemeProvider>
         );
+    }
+
+    aspectIsSelected(aspect: LifeAspect) {
+        return this.state.selectedAspects && this.state.selectedAspects.some((a: LifeAspect) => a.name === aspect.name);
     }
 
     handleBack(event: any): void {
@@ -117,5 +135,23 @@ export class Stepper extends React.Component {
         event.preventDefault();
 
         this.setState({ activeStep: this.state.activeStep + 1 });
+    }
+
+    handleSelection(event: any, aspect: LifeAspect) {
+        event.preventDefault();
+
+        let selectedAspects = this.state.selectedAspects;
+
+        if ( selectedAspects ) {
+            if ( this.aspectIsSelected(aspect) ) {
+                selectedAspects = selectedAspects.filter((a: LifeAspect) => a.name !== aspect.name);
+            } else {
+                selectedAspects.push(aspect);
+            }
+        } else {
+            selectedAspects = [ aspect ];
+        }
+
+        this.setState({ selectedAspects: selectedAspects });
     }
 }

@@ -1,4 +1,8 @@
-div#aspect-rows-container {
+h2, h3 {
+    text-align: center;
+}
+
+div#wol-aspect-rows-container {
     padding: 25px 0;
 
     div.button-row {
@@ -11,7 +15,12 @@ div#aspect-rows-container {
     
         button.aspect-button {
             width: 321px;
+            min-height: 60px;
             
+            @media(max-width: 1000px) {
+                width: 30%;
+                font-size: 11px;
+            }
         }
     }
 }
