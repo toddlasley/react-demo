@@ -2,8 +2,8 @@ import React from 'react';
 import { Button, createMuiTheme, Theme, ThemeProvider, Tooltip, withStyles } from '@material-ui/core';
 import './Stepper.scss';
 import '../../styles/variables.scss';
-import { LIFE_ASPECTS, MATERIAL_FORM_THEME } from '../../config/constants';
-import { LifeAspect } from '../../models/LifeAspect';
+import { LIFE_CATEGORIES, MATERIAL_FORM_THEME } from '../../config/constants';
+import { LifeCategory } from '../../models/LifeCategory';
 
 const theme = createMuiTheme(MATERIAL_FORM_THEME);
 
@@ -18,7 +18,7 @@ const HtmlTooltip = withStyles((theme: Theme) => ({
 export class Stepper extends React.Component {
     public state: any;
 
-    private readonly MAX_ASPECTS_PER_ROW = 3;
+    private readonly MAX_CATEGORIES_PER_ROW = 3;
     private readonly REQUIRED_SELECTION_COUNT = 8;
 
     constructor(props: any) {
@@ -33,47 +33,47 @@ export class Stepper extends React.Component {
     }
 
     get confirmButtonDisabled() {
-        return !this.requiredAspectsSelected;
+        return !this.requiredCategoriesSelected;
     }
 
     get confirmButtonText() {
         return 'Next';
     }
 
-    get requiredAspectsSelected() {
-        return this.state.selectedAspects && this.state.selectedAspects.length === this.REQUIRED_SELECTION_COUNT;
+    get requiredCategoriesSelected() {
+        return this.state.selectedCategories && this.state.selectedCategories.length === this.REQUIRED_SELECTION_COUNT;
     }
 
-    get aspectSelectionElementRows(): JSX.Element[] {
+    get categorySelectionElementRows(): JSX.Element[] {
         const rows = [];
 
-        for(let row = 0; row < Math.ceil(LIFE_ASPECTS.length / this.MAX_ASPECTS_PER_ROW); row++) {
-            const startingIndex = row * this.MAX_ASPECTS_PER_ROW;
-            const aspects = LIFE_ASPECTS.slice(startingIndex, startingIndex + this.MAX_ASPECTS_PER_ROW);
+        for(let row = 0; row < Math.ceil(LIFE_CATEGORIES.length / this.MAX_CATEGORIES_PER_ROW); row++) {
+            const startingIndex = row * this.MAX_CATEGORIES_PER_ROW;
+            const categories = LIFE_CATEGORIES.slice(startingIndex, startingIndex + this.MAX_CATEGORIES_PER_ROW);
             const buttons: JSX.Element[] = [];
 
-            aspects.forEach((aspect) => {
+            categories.forEach((category) => {
                 buttons.push(
                     <HtmlTooltip
-                        key={'tooltip' + aspect.name}
-                        title={aspect.description}
+                        key={'tooltip' + category.name}
+                        title={category.description}
                         placement="top-start"
                     >
                         <Button
-                            key={aspect.name}
+                            key={category.name}
                             variant="contained"
-                            color={this.aspectIsSelected(aspect) ? 'secondary' : 'default'}
-                            className="aspect-button"
-                            onClick={(e) => { this.handleSelection(e, aspect) }}
-                            disabled={this.requiredAspectsSelected && !this.aspectIsSelected(aspect)}
+                            color={this.categoryIsSelected(category) ? 'secondary' : 'default'}
+                            className="category-button"
+                            onClick={(e) => { this.handleSelection(e, category) }}
+                            disabled={this.requiredCategoriesSelected && !this.categoryIsSelected(category)}
                         >
-                            {aspect.name}
+                            {category.name}
                         </Button>
                     </HtmlTooltip>
                 );
             });
 
-            while ( buttons.length < this.MAX_ASPECTS_PER_ROW ) {
+            while ( buttons.length < this.MAX_CATEGORIES_PER_ROW ) {
                 buttons.push(
                     <span key={'faux' + buttons.length.toString()} className="faux-button"></span>
                 );
@@ -100,8 +100,8 @@ export class Stepper extends React.Component {
                             ?
                                 <>
                                     <h3>Choose the top 8 life categories most important to you</h3>
-                                    <div id="wol-aspect-rows-container">
-                                        {this.aspectSelectionElementRows}
+                                    <div id="wol-category-rows-container">
+                                        {this.categorySelectionElementRows}
                                     </div>
                                 </>
                             : <p>Not on first page</p>
@@ -121,8 +121,8 @@ export class Stepper extends React.Component {
         );
     }
 
-    aspectIsSelected(aspect: LifeAspect) {
-        return this.state.selectedAspects && this.state.selectedAspects.some((a: LifeAspect) => a.name === aspect.name);
+    categoryIsSelected(category: LifeCategory) {
+        return this.state.selectedCategories && this.state.selectedCategories.some((a: LifeCategory) => a.name === category.name);
     }
 
     handleBack(event: any): void {
@@ -137,21 +137,21 @@ export class Stepper extends React.Component {
         this.setState({ activeStep: this.state.activeStep + 1 });
     }
 
-    handleSelection(event: any, aspect: LifeAspect) {
+    handleSelection(event: any, category: LifeCategory) {
         event.preventDefault();
 
-        let selectedAspects = this.state.selectedAspects;
+        let selectedCatgories = this.state.selectedCategories;
 
-        if ( selectedAspects ) {
-            if ( this.aspectIsSelected(aspect) ) {
-                selectedAspects = selectedAspects.filter((a: LifeAspect) => a.name !== aspect.name);
+        if ( selectedCatgories ) {
+            if ( this.categoryIsSelected(category) ) {
+                selectedCatgories = selectedCatgories.filter((a: LifeCategory) => a.name !== category.name);
             } else {
-                selectedAspects.push(aspect);
+                selectedCatgories.push(category);
             }
         } else {
-            selectedAspects = [ aspect ];
+            selectedCatgories = [ category ];
         }
 
-        this.setState({ selectedAspects: selectedAspects });
+        this.setState({ selectedCategories: selectedCatgories });
     }
 }

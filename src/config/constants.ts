@@ -1,4 +1,4 @@
-import { LifeAspect } from "../models/LifeAspect";
+import { LifeCategory as LifeCategory } from "../models/LifeCategory";
 
 export const MATERIAL_FORM_THEME = {
     palette: {
@@ -14,7 +14,7 @@ export const MATERIAL_FORM_THEME = {
     }
 };
 
-export const LIFE_ASPECTS: LifeAspect[] = [
+export const LIFE_CATEGORIES: LifeCategory[] = [
     {
         name: 'Health & Fitness',
         description: 'The state of your health and physical body as well as your relationship with your body, with physical activity, with food and nourishment, etc.'

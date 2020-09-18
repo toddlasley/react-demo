@@ -1,4 +1,4 @@
-export interface LifeAspect {
+export interface LifeCategory {
     name: string;
     description: string;
 }
