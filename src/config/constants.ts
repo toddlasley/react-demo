@@ -1,4 +1,4 @@
-import { LifeCategory as LifeCategory } from "../models/LifeCategory";
+import { LifeCategory } from "../models/LifeCategory";
 
 export const MATERIAL_FORM_THEME = {
     palette: {

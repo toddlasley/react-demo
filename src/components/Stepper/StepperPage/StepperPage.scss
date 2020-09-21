@@ -1,0 +1,86 @@
+$large-viewport: 1400px;
+$medium-viewport: 1100px;
+$small-viewport: 720px;
+$x-small-viewport: 560px;
+
+$rating-label-width: 153px;
+$small-rating-label-width: 115px;
+
+div#wol-rating-button-container {
+    display: flex;
+    justify-content: center;
+
+    @media(max-width: $medium-viewport) {
+        display: block;
+    }
+
+    div.rating-button-sub-container {
+        span.rating-label {
+            width: $rating-label-width;
+
+            @media(max-width: $x-small-viewport) {
+                font-size: 12px;
+                width: $small-rating-label-width;
+            }
+        }
+
+        button.rating-button {
+            min-width: 80px;
+            min-height: 80px;
+            border-radius: 40px;
+            font-size: 16px;
+            margin: 5px 10px;
+
+            @media(max-width: $large-viewport) {
+                min-width: 60px;
+                min-height: 60px;
+                border-radius: 30px;
+            }
+
+            @media(max-width: $small-viewport) {
+                min-width: 40px;
+                max-width: 40px;
+                min-height: 40px;
+                border-radius: 20px;
+                font-size: 12px;
+                margin: 5px 5px;
+            }
+        }
+
+        @media(max-width: $medium-viewport) {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            &:first-child {
+                padding-right: $rating-label-width;
+
+                span.rating-label {
+                    text-align: right;
+                }
+            }
+
+            &:last-child {
+                padding-left: $rating-label-width;
+            }
+        }
+
+        @media(max-width: $x-small-viewport) {
+            display: flex;
+
+            &:first-child {
+                padding-right: 0;
+                justify-content: flex-start;
+            }
+
+            &:last-child {
+                padding-left: 0;
+                justify-content: flex-end;
+            }
+        }
+    }
+}
+
+div#wol-category-description {
+    text-align: center;
+}

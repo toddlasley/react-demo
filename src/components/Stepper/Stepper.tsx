@@ -4,6 +4,7 @@ import './Stepper.scss';
 import '../../styles/variables.scss';
 import { LIFE_CATEGORIES, MATERIAL_FORM_THEME } from '../../config/constants';
 import { LifeCategory } from '../../models/LifeCategory';
+import { StepperPage } from './StepperPage/StepperPage';
 
 const theme = createMuiTheme(MATERIAL_FORM_THEME);
 
@@ -15,8 +16,13 @@ const HtmlTooltip = withStyles((theme: Theme) => ({
     },
 }))(Tooltip);
 
-export class Stepper extends React.Component {
-    public state: any;
+interface StepperState {
+    activeStep: number;
+    ratings: number[];
+    selectedCategories: LifeCategory[];
+};
+
+export class Stepper extends React.Component<{}, StepperState> {
 
     private readonly MAX_CATEGORIES_PER_ROW = 3;
     private readonly REQUIRED_SELECTION_COUNT = 8;
@@ -25,15 +31,27 @@ export class Stepper extends React.Component {
         super(props);
 
         this.state = {
-            activeStep: 0
+            activeStep: 0,
+            ratings: [],
+            selectedCategories: []
         };
 
         this.handleBack = this.handleBack.bind(this);
         this.handleNext = this.handleNext.bind(this);
+        this.handleRatingSelection = this.handleRatingSelection.bind(this);
     }
 
     get confirmButtonDisabled() {
-        return !this.requiredCategoriesSelected;
+        const activeStep = this.state.activeStep;
+        let disabled = true;
+
+        if ( activeStep === 0 ) {
+            disabled = !this.requiredCategoriesSelected;
+        } else if ( this.state.selectedCategories && activeStep <= this.state.selectedCategories.length ) {
+            disabled = !this.state.ratings[activeStep - 1];
+        }
+
+        return disabled;
     }
 
     get confirmButtonText() {
@@ -47,7 +65,7 @@ export class Stepper extends React.Component {
     get categorySelectionElementRows(): JSX.Element[] {
         const rows = [];
 
-        for(let row = 0; row < Math.ceil(LIFE_CATEGORIES.length / this.MAX_CATEGORIES_PER_ROW); row++) {
+        for ( let row = 0; row < Math.ceil(LIFE_CATEGORIES.length / this.MAX_CATEGORIES_PER_ROW); row++ ) {
             const startingIndex = row * this.MAX_CATEGORIES_PER_ROW;
             const categories = LIFE_CATEGORIES.slice(startingIndex, startingIndex + this.MAX_CATEGORIES_PER_ROW);
             const buttons: JSX.Element[] = [];
@@ -64,7 +82,7 @@ export class Stepper extends React.Component {
                             variant="contained"
                             color={this.categoryIsSelected(category) ? 'secondary' : 'default'}
                             className="category-button"
-                            onClick={(e) => { this.handleSelection(e, category) }}
+                            onClick={(e) => { this.handleCategorySelection(e, category) }}
                             disabled={this.requiredCategoriesSelected && !this.categoryIsSelected(category)}
                         >
                             {category.name}
@@ -96,15 +114,17 @@ export class Stepper extends React.Component {
                     <h2>Wheel of Life</h2>
                     <div>
                         {
-                            this.state.activeStep === 0
-                            ?
-                                <>
-                                    <h3>Choose the top 8 life categories most important to you</h3>
-                                    <div id="wol-category-rows-container">
-                                        {this.categorySelectionElementRows}
-                                    </div>
-                                </>
-                            : <p>Not on first page</p>
+                            this.state.activeStep > 0
+                                ?   <StepperPage
+                                        {...{lifeCategory: this.state.selectedCategories[this.state.activeStep - 1], rating: this.state.ratings[this.state.activeStep - 1]}}
+                                        onRatingSelect={this.handleRatingSelection}
+                                    />
+                                :   <>
+                                        <h3>Choose the top 8 life categories most important to you</h3>
+                                        <div id="wol-category-rows-container">
+                                            {this.categorySelectionElementRows}
+                                        </div>
+                                    </>
                         }
 
                         <div id="wol-button-actions-row">
@@ -137,21 +157,23 @@ export class Stepper extends React.Component {
         this.setState({ activeStep: this.state.activeStep + 1 });
     }
 
-    handleSelection(event: any, category: LifeCategory) {
+    handleCategorySelection(event: any, category: LifeCategory) {
         event.preventDefault();
 
         let selectedCatgories = this.state.selectedCategories;
 
-        if ( selectedCatgories ) {
-            if ( this.categoryIsSelected(category) ) {
-                selectedCatgories = selectedCatgories.filter((a: LifeCategory) => a.name !== category.name);
-            } else {
-                selectedCatgories.push(category);
-            }
+        if ( this.categoryIsSelected(category) ) {
+            selectedCatgories = selectedCatgories.filter((a: LifeCategory) => a.name !== category.name);
         } else {
-            selectedCatgories = [ category ];
+            selectedCatgories.push(category);
         }
 
         this.setState({ selectedCategories: selectedCatgories });
+    }
+
+    handleRatingSelection(rating: number) {
+        const ratings = this.state.ratings;
+        ratings[this.state.activeStep - 1] = rating;
+        this.setState({ ratings: ratings });
     }
 }
