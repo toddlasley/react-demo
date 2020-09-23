@@ -42,7 +42,7 @@ export class PolarAreaChart extends React.Component<PolarAraChartProps> {
         });
 
         return (
-            <div id="wol-chart-main-container">
+            <div id="wol-main-chart-container">
                 <div id="wol-chart-labels-container" className="chart-sub-container">
                     {labels}
                 </div>

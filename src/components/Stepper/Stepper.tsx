@@ -6,6 +6,7 @@ import { LIFE_CATEGORIES, MATERIAL_FORM_THEME } from '../../config/constants';
 import { LifeCategory } from '../../models/LifeCategory';
 import { StepperPage } from './StepperPage/StepperPage';
 import { PolarAreaChart } from './PolarAreaChart/PolarAreaChart';
+import html2canvas from 'html2canvas';
 
 const theme = createMuiTheme(MATERIAL_FORM_THEME);
 
@@ -40,9 +41,11 @@ export class Stepper extends React.Component<{}, StepperState> {
         this.handleBack = this.handleBack.bind(this);
         this.handleNext = this.handleNext.bind(this);
         this.handleRatingSelection = this.handleRatingSelection.bind(this);
+        this.handleReset = this.handleReset.bind(this);
+        this.handlePrint = this.handlePrint.bind(this);
     }
 
-    get confirmButtonDisabled() {
+    get nextButtonDisabled() {
         const activeStep = this.state.activeStep;
         let disabled = true;
 
@@ -53,10 +56,6 @@ export class Stepper extends React.Component<{}, StepperState> {
         }
 
         return disabled;
-    }
-
-    get confirmButtonText() {
-        return 'Next';
     }
 
     get requiredCategoriesSelected() {
@@ -145,11 +144,17 @@ export class Stepper extends React.Component<{}, StepperState> {
                                             <Button disabled={this.state.activeStep === 0} onClick={this.handleBack}>
                                                 Back
                                             </Button>
-                                            <Button disabled={this.confirmButtonDisabled} variant="contained" color="primary" onClick={this.handleNext}>
-                                                {this.confirmButtonText}
+                                            <Button disabled={this.nextButtonDisabled} variant="contained" color="primary" onClick={this.handleNext}>
+                                                Next
                                             </Button>
                                         </>
                                     :   <>
+                                            <Button onClick={this.handleReset}>
+                                                Reset
+                                            </Button>
+                                            <Button variant="contained" color="primary" onClick={this.handlePrint}>
+                                                Print
+                                            </Button>
                                         </>
                             }
                         </div>
@@ -193,5 +198,28 @@ export class Stepper extends React.Component<{}, StepperState> {
         const ratings = this.state.ratings;
         ratings[this.state.activeStep - 1] = rating;
         this.setState({ ratings: ratings });
+    }
+
+    handleReset(event: any) {
+        event.preventDefault();
+        this.setState(
+            {
+                activeStep: 0,
+                selectedCategories: [],
+                ratings: []
+            }
+        );
+    }
+
+    handlePrint(event: any) {
+        event.preventDefault();
+        const mainChartContainerElement = document.getElementById('wol-main-chart-container'); 
+        if ( mainChartContainerElement ) {
+            html2canvas(mainChartContainerElement).then((canvas) => {
+                mainChartContainerElement.innerHTML = '';
+                mainChartContainerElement.appendChild(canvas);
+                window.print();
+            });
+        }
     }
 }

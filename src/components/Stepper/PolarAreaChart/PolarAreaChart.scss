@@ -2,7 +2,7 @@
 
 $small-viewport: 720px;
 
-div#wol-chart-main-container {
+div#wol-main-chart-container {
     display: flex;
     justify-content: center;
     padding-bottom: 20px;
@@ -47,7 +47,7 @@ div#wol-chart-main-container {
             }
 
             span.label-name {
-                min-width: 210px;
+                width: 210px;
                 display: flex;
                 align-items: center;
                 margin-left: 10px;

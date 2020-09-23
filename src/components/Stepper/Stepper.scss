@@ -24,3 +24,13 @@ div#wol-category-rows-container {
         }
     }
 }
+
+div#wol-button-actions-row {
+    display: flex;
+    justify-content: flex-end;
+    padding-right: 5%;
+
+    button:last-child {
+        margin-left: 20px;
+    }
+}
