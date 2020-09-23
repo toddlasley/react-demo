@@ -2,9 +2,12 @@ $large-viewport: 1400px;
 $medium-viewport: 1100px;
 $small-viewport: 720px;
 $x-small-viewport: 560px;
+$x-x-small-viewport: 420px;
+$x-x-x-small-viewport: 370px;
 
 $rating-label-width: 153px;
-$small-rating-label-width: 115px;
+$x-small-rating-label-width: 80px;
+$x-x-small-rating-label-width: 56px;
 
 div#wol-rating-button-container {
     display: flex;
@@ -20,7 +23,11 @@ div#wol-rating-button-container {
 
             @media(max-width: $x-small-viewport) {
                 font-size: 12px;
-                width: $small-rating-label-width;
+                width: $x-small-rating-label-width;
+            }
+
+            @media(max-width: $x-x-small-viewport) {
+                width: $x-x-small-rating-label-width;
             }
         }
 
@@ -67,15 +74,41 @@ div#wol-rating-button-container {
 
         @media(max-width: $x-small-viewport) {
             display: flex;
+            align-items: center;
+            justify-content: center;
 
             &:first-child {
+                padding-right: $x-small-rating-label-width;
+            }
+
+            &:last-child {
+                padding-left: $x-small-rating-label-width;
+            }
+        }
+
+        @media(max-width: $x-x-small-viewport) {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            &:first-child {
+                padding-right: $x-x-small-rating-label-width;
+            }
+
+            &:last-child {
+                padding-left: $x-x-small-rating-label-width;
+            }
+        }
+
+        @media(max-width: $x-x-x-small-viewport) {
+            &:first-child {
                 padding-right: 0;
-                justify-content: flex-start;
+                justify-content: flex-end;
             }
 
             &:last-child {
                 padding-left: 0;
-                justify-content: flex-end;
+                justify-content: flex-start;
             }
         }
     }
