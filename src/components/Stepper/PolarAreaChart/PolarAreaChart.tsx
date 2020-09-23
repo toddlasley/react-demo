@@ -2,109 +2,79 @@ import React from 'react';
 import { Chart } from 'chart.js';
 import './PolarAreaChart.scss';
 
-export class PolarAreaChart extends React.Component {
-    private chart: Chart | undefined;
-    private labels: string[] | undefined;
-    private data: number[] | undefined;
-    private formInvalid = false;
+interface PolarAraChartProps {
+    labels: string[];
+    data: number[];
+}
 
+export class PolarAreaChart extends React.Component<PolarAraChartProps> {
+    private readonly CHART_ELEMENT_ID = 'wol-chart';
+    private readonly CHART_COLORS = [
+        'rgba(0, 113, 188, 1)',
+        'rgba(147, 39, 143, 1)',
+        'rgba(237, 30, 121, 1)',
+        'rgba(237, 28, 36, 1)',
+        'rgba(247, 147, 30, 1)',
+        'rgba(252, 238, 33, 1)',
+        'rgba(0, 146, 69, 1)',
+        'rgba(41, 171, 226, 1)'
+    ];
+
+    // eslint-disable-next-line
     constructor(props: any) {
         super(props);
-        this.updateProps(props);
     }
 
 
     render() {
-        this.updateProps(this.props);
-        this.createChartObject();
+        const labels: JSX.Element[] = [];
+
+        this.props.labels.forEach((label, index) => {
+            const color = this.CHART_COLORS[index];
+            const rating = this.props.data[index];
+
+            labels.push(
+                <div className="label-container" key={'label' + label}>
+                    <span className="label-rating" style={{backgroundColor: color}}>{rating}</span>
+                    <span className="label-name">{label}</span>
+                </div>
+            );
+        });
 
         return (
-            <div id="chart-container">
-                {this.formInvalid
-                    ? <h3>Please provide the necessary values to complete your Wheel of Life.</h3>
-                    : <canvas id="chart" width="500" height="500"></canvas>}
+            <div id="wol-chart-main-container">
+                <div id="wol-chart-labels-container" className="chart-sub-container">
+                    {labels}
+                </div>
+                <div id="wol-chart-container" className="chart-sub-container">
+                    <canvas id={this.CHART_ELEMENT_ID} width="500" height="500"></canvas>
+                </div>
             </div>
         );
     }
 
     componentDidMount() {
-        this.createChartObject();
-    }
-
-    componentDidUpdate() {
-        if ( !this.chart ) {
-            this.createChartObject();
-        } else {
-            this.chart.data = this.getChartData();
-            
-            if ( this.chart.options.animation ) {
-                this.chart.options.animation.duration = 0;
+        const chartElement = document.getElementById(this.CHART_ELEMENT_ID) as HTMLCanvasElement;
+        new Chart(chartElement.getContext('2d') as any, {
+            type: 'polarArea',
+            data: {
+                datasets: [{
+                    data: this.props.data,
+                    backgroundColor: this.CHART_COLORS,
+                    borderColor: this.CHART_COLORS,
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                scale: {
+                    ticks: {
+                        suggestedMax: 10
+                    }
+                },
+                tooltips: { enabled: false },
+                hover: {}
             }
-
-            this.chart.update();
-        }
-    }
-
-    private updateProps(props: any) {
-        this.labels = props.labels;
-        this.data = props.data;
-        this.formInvalid = !!props.formInvalid;
-    }
-
-    private createChartObject() {
-        const chartElement = document.getElementById('chart') as HTMLCanvasElement;
-        if ( chartElement && this.labels && this.data ) {
-            this.chart = new Chart(chartElement.getContext('2d') as any, {
-                type: 'polarArea',
-                data: this.getChartData(),
-                options: {
-                    responsive: true,
-                    scale: {
-                        ticks: {
-                            suggestedMax: 10
-                        }
-                    },
-                    tooltips: { enabled: false },
-                    hover: {}
-                }
-            });
-        } else if ( this.chart ) {
-            this.chart = undefined;
-        }
-    }
-
-    private getChartData() {
-        return {
-            labels: this.labels,
-            datasets: [{
-                label: '# of Votes',
-                data: this.data,
-                backgroundColor: [
-                    'rgba(255, 99, 132, 0.2)',
-                    'rgba(31, 120, 22, 0.2)',
-                    'rgba(54, 162, 235, 0.2)',
-                    'rgba(255, 206, 86, 0.2)',
-                    'rgba(75, 192, 192, 0.2)',
-                    'rgba(153, 102, 255, 0.2)',
-                    'rgba(255, 159, 64, 0.2)',
-                    'rgba(128, 49, 49, 0.2)',
-                    'rgba(255, 10, 246, 0.2)',
-                    'rgba(20, 19, 118, 0.2)'
-                ],
-                borderColor: [
-                    'rgba(255, 99, 132, 1)',
-                    'rgba(31, 120, 22, 1)',
-                    'rgba(54, 162, 235, 1)',
-                    'rgba(255, 206, 86, 1)',
-                    'rgba(75, 192, 192, 1)',
-                    'rgba(153, 102, 255, 1)',
-                    'rgba(255, 159, 64, 1)',
-                    'rgba(128, 49, 49, 1)',
-                    'rgba(255, 10, 246, 1)',
-                    'rgba(20, 19, 118, 1)'
-                ],
-                borderWidth: 1
-            }]
-        }
+        });
     }
 }

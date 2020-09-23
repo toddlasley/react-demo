@@ -14,6 +14,7 @@ interface StepperPageState {
 }
 
 export class StepperPage extends React.Component<StepperPageProps, StepperPageState> {
+    // eslint-disable-next-line
     constructor(props: StepperPageProps) {
         super(props);
     }

@@ -4,6 +4,7 @@ import './App.scss';
 
 
 export class App extends React.Component {
+    // eslint-disable-next-line
     constructor(props: any) {
         super(props);
     }

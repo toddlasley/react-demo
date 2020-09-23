@@ -5,6 +5,7 @@ import '../../styles/variables.scss';
 import { LIFE_CATEGORIES, MATERIAL_FORM_THEME } from '../../config/constants';
 import { LifeCategory } from '../../models/LifeCategory';
 import { StepperPage } from './StepperPage/StepperPage';
+import { PolarAreaChart } from './PolarAreaChart/PolarAreaChart';
 
 const theme = createMuiTheme(MATERIAL_FORM_THEME);
 
@@ -107,6 +108,19 @@ export class Stepper extends React.Component<{}, StepperState> {
         return rows;
     }
 
+    get advancedPage() {
+        return this.showRatingSelectPage
+            ?   <StepperPage
+                    {...{lifeCategory: this.state.selectedCategories[this.state.activeStep - 1], rating: this.state.ratings[this.state.activeStep - 1]}}
+                    onRatingSelect={this.handleRatingSelection}
+                />
+            :   <PolarAreaChart {...{ labels: this.state.selectedCategories.map(c => c.name), data: this.state.ratings}} />
+    }
+
+    get showRatingSelectPage() {
+        return this.state.activeStep - 1 < this.REQUIRED_SELECTION_COUNT;
+    }
+
     render() {
         return (
             <ThemeProvider theme={theme}>
@@ -114,26 +128,30 @@ export class Stepper extends React.Component<{}, StepperState> {
                     <h2>Wheel of Life</h2>
                     <div>
                         {
-                            this.state.activeStep > 0
-                                ?   <StepperPage
-                                        {...{lifeCategory: this.state.selectedCategories[this.state.activeStep - 1], rating: this.state.ratings[this.state.activeStep - 1]}}
-                                        onRatingSelect={this.handleRatingSelection}
-                                    />
-                                :   <>
+                            this.state.activeStep === 0   
+                                ?   <>
                                         <h3>Choose the top 8 life categories most important to you</h3>
                                         <div id="wol-category-rows-container">
                                             {this.categorySelectionElementRows}
                                         </div>
                                     </>
+                                :   this.advancedPage
                         }
 
                         <div id="wol-button-actions-row">
-                            <Button disabled={this.state.activeStep === 0} onClick={this.handleBack}>
-                                Back
-                            </Button>
-                            <Button disabled={this.confirmButtonDisabled} variant="contained" color="primary" onClick={this.handleNext}>
-                                {this.confirmButtonText}
-                            </Button>
+                            {
+                                this.showRatingSelectPage
+                                    ?   <>
+                                            <Button disabled={this.state.activeStep === 0} onClick={this.handleBack}>
+                                                Back
+                                            </Button>
+                                            <Button disabled={this.confirmButtonDisabled} variant="contained" color="primary" onClick={this.handleNext}>
+                                                {this.confirmButtonText}
+                                            </Button>
+                                        </>
+                                    :   <>
+                                        </>
+                            }
                         </div>
                     </div>
                 </div>
