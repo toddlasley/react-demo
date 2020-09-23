@@ -177,7 +177,15 @@ export class Stepper extends React.Component<{}, StepperState> {
     handleNext(event: any): void {
         event.preventDefault();
 
-        this.setState({ activeStep: this.state.activeStep + 1 });
+        const updatedState: any = {
+            activeStep: this.state.activeStep + 1
+        };
+
+        if ( !this.state.activeStep && this.state.ratings.length ) {
+            updatedState.ratings = [];
+        }
+
+        this.setState(updatedState);
     }
 
     handleCategorySelection(event: any, category: LifeCategory) {
