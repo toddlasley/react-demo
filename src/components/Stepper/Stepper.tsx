@@ -124,12 +124,12 @@ export class Stepper extends React.Component<{}, StepperState> {
         return (
             <ThemeProvider theme={theme}>
                 <div>
-                    <h2>Wheel of Life</h2>
+                    <h2 id="wol-app-title">Wheel of Life</h2>
                     <div>
                         {
                             this.state.activeStep === 0   
                                 ?   <>
-                                        <h3>Choose the top 8 life categories most important to you</h3>
+                                        <h3 id="wol-call-to-action">Choose the top 8 life categories most important to you</h3>
                                         <div id="wol-category-rows-container">
                                             {this.categorySelectionElementRows}
                                         </div>

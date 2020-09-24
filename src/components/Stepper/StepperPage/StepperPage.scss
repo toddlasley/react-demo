@@ -9,6 +9,11 @@ $rating-label-width: 153px;
 $x-small-rating-label-width: 80px;
 $x-x-small-rating-label-width: 56px;
 
+h3#wol-rating-question {
+    text-align: center;
+    color: black;
+}
+
 div#wol-rating-button-container {
     display: flex;
     justify-content: center;
@@ -20,6 +25,7 @@ div#wol-rating-button-container {
     div.rating-button-sub-container {
         span.rating-label {
             width: $rating-label-width;
+            color: black;
 
             @media(max-width: $x-small-viewport) {
                 font-size: 12px;
@@ -116,4 +122,5 @@ div#wol-rating-button-container {
 
 div#wol-category-description {
     text-align: center;
+    color: black;
 }

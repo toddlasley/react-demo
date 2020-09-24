@@ -35,7 +35,7 @@ export class StepperPage extends React.Component<StepperPageProps, StepperPageSt
 
         return (
             <div>
-                <h3>How would you rate this category of your life?</h3>
+                <h3 id="wol-rating-question">How would you rate this category of your life?</h3>
                 <div id="wol-rating-button-container">
                     <div className="rating-button-sub-container">
                         <span className="rating-label">Very little satisfaction</span>
