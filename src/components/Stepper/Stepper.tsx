@@ -42,7 +42,6 @@ export class Stepper extends React.Component<{}, StepperState> {
         this.handleNext = this.handleNext.bind(this);
         this.handleRatingSelection = this.handleRatingSelection.bind(this);
         this.handleReset = this.handleReset.bind(this);
-        this.handlePrint = this.handlePrint.bind(this);
     }
 
     get nextButtonDisabled() {
@@ -152,9 +151,6 @@ export class Stepper extends React.Component<{}, StepperState> {
                                             <Button onClick={this.handleReset}>
                                                 Reset
                                             </Button>
-                                            <Button variant="contained" color="primary" onClick={this.handlePrint}>
-                                                Print
-                                            </Button>
                                         </>
                             }
                         </div>
@@ -219,15 +215,25 @@ export class Stepper extends React.Component<{}, StepperState> {
         );
     }
 
-    handlePrint(event: any) {
-        event.preventDefault();
-        const mainChartContainerElement = document.getElementById('wol-main-chart-container'); 
-        if ( mainChartContainerElement ) {
-            html2canvas(mainChartContainerElement).then((canvas) => {
-                mainChartContainerElement.innerHTML = '';
-                mainChartContainerElement.appendChild(canvas);
-                window.print();
-            });
-        }
-    }
+    // handlePrint(event: any) {
+    //     event.preventDefault();
+
+    //     const mainChartContainerElement = document.getElementById('wol-main-chart-container');
+
+    //     const imageDownloadWidth = 1024;
+        
+    //     if ( mainChartContainerElement ) {
+    //         mainChartContainerElement.scrollIntoView();
+
+    //         html2canvas(
+    //             mainChartContainerElement,
+    //             { windowWidth: imageDownloadWidth, width: imageDownloadWidth }
+    //         ).then((canvas) => {
+    //             const psuedoLinkElement = document.createElement('a');
+    //             psuedoLinkElement.download = 'wheel-of-life.jpeg';
+    //             psuedoLinkElement.href = canvas.toDataURL('image/jpeg');
+    //             psuedoLinkElement.click();
+    //         });
+    //     }
+    // }
 }
